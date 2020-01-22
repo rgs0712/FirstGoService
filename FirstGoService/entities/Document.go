@@ -1,5 +1,5 @@
 package entities
 
-type Documento struct {
+type Document struct {
 	Id int
 }
