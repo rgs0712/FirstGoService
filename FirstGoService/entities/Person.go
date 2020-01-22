@@ -9,6 +9,9 @@ type Person struct {
 }
 
 func NewPerson(FirstName string, LastName string) Person {
+	return Person{Id: GetPersonId(), FirstName: FirstName, LastName: LastName}
+}
+func GetPersonId() int {
 	Index++
-	return Person{Id: Index, FirstName: FirstName, LastName: LastName}
+	return Index
 }

@@ -21,6 +21,7 @@ func main() {
 	router.HandleFunc("/contato", List).Methods("GET")
 	router.HandleFunc("/contato/{id}", Get).Methods("GET")
 	router.HandleFunc("/contato", Create).Methods("POST")
+	router.HandleFunc("/contato/{id}", Alter).Methods("PATCH")
 	router.HandleFunc("/contato/{id}", Delete).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
@@ -65,9 +66,36 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Alter(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range ListPerson {
+		Id, error := strconv.ParseInt(params["id"], 10, 64)
+
+		if error == nil {
+			fmt.Printf("%d of type %T", Id, Id)
+		}
+
+		if item.Id == int(Id) {
+			ListPerson = append(ListPerson[:index], ListPerson[index+1:]...)
+			break
+		}
+
+		var person entities.Person
+		_ = json.NewDecoder(r.Body).Decode(&person)
+
+		person.Id = int(Id)
+
+		ListPerson = append(ListPerson, person)
+
+		json.NewEncoder(w).Encode(person)
+	}
+}
+
 func Create(w http.ResponseWriter, r *http.Request) {
 	var person entities.Person
 	_ = json.NewDecoder(r.Body).Decode(&person)
+
+	person.Id = entities.GetPersonId()
 
 	ListPerson = append(ListPerson, person)
 	json.NewEncoder(w).Encode(person)
